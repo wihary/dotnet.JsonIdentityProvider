@@ -26,7 +26,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
 
         public async Task<IdentityResult> UpdateAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            return await this.jsonStorage.UpdateUserAndCommitAsync(user);
+            return await Task.FromResult(this.jsonStorage.UpdateUserAndCommitAsync(user));
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         {
             try
             {
-                await this.jsonStorage.CreateUserAndCommitAsync(user);
+                await Task.FromResult(this.jsonStorage.CreateUserAndCommitAsync(user));
                 return IdentityResult.Success;
             }
             catch (Exception ex)
@@ -63,7 +63,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
 
         public Task<ApiUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            return this.jsonStorage.GetUserByName(normalizedUserName);
+            return Task.FromResult(this.jsonStorage.GetUserByName(normalizedUserName));
         }
         public Task<bool> HasPasswordAsync(ApiUser user, CancellationToken cancellationToken)
         {
@@ -112,7 +112,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
 
         public async Task<IList<Claim>> GetClaimsAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            var userClaims = await this.jsonStorage.GetUserClaims(user.Id);
+            var userClaims = await Task.FromResult(this.jsonStorage.GetUserClaims(user.Id));
             return userClaims.ConvertAll(claim => claim.ToClaim());
         }
 

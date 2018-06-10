@@ -57,7 +57,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public async Task<ApiUser> GetUserByName(string userName)
+        public ApiUser GetUserByName(string userName)
         {
             return this.UserContext.Where(user => user.NormalizedUserName == userName).FirstOrDefault();
         }
@@ -67,7 +67,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<List<IdentityUserClaim<string>>> GetUserClaims(string userId)
+        public List<IdentityUserClaim<string>> GetUserClaims(string userId)
         {
             return this.UserContext.Where(usr => usr.Id == userId).FirstOrDefault().Claims;
         }
@@ -90,13 +90,13 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<bool> CreateUserAndCommitAsync(ApiUser user)
+        public bool CreateUserAndCommitAsync(ApiUser user)
         {
             if (!this.UserContext.Any(usr => usr.NormalizedUserName == user.NormalizedUserName))
             {
                 this.UserContext.Add(user);
 
-                await this.CommitAsync();
+                this.CommitAsync();
 
                 return true;
             }
@@ -109,7 +109,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<IdentityResult> UpdateUserAndCommitAsync(ApiUser user)
+        public IdentityResult UpdateUserAndCommitAsync(ApiUser user)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
                     this.UserContext.RemoveAll(usr => usr.NormalizedUserName == user.NormalizedUserName);
                     this.UserContext.Add(user);
 
-                    await this.CommitAsync();
+                    this.CommitAsync();
 
                     return IdentityResult.Success;
                 }
@@ -136,13 +136,13 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> CommitAsync()
+        private bool CommitAsync()
         {
 
             var jsonUser = JsonConvert.SerializeObject(this.UserContext.ToList());
             try
             {
-                await File.WriteAllTextAsync(this.config["Identity:rootPath"], jsonUser);
+                File.WriteAllText(this.config["Identity:rootPath"], jsonUser);
             }
             catch (System.Exception ex)
             {
@@ -176,11 +176,11 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// 
         /// </summary>
         /// <returns></returns>
-        private async Task LoadUserDbFromFile()
+        private void LoadUserDbFromFile()
         {
             try
             {
-                var userDb = await File.ReadAllTextAsync(this.config["Identity:rootPath"]);
+                var userDb = File.ReadAllText(this.config["Identity:rootPath"]);
                 this.UserContext = JsonConvert.DeserializeObject<List<ApiUser>>(userDb);
             }
             catch (Exception ex)
