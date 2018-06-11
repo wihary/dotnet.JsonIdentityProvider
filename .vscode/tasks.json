@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Dotnet.JsonIdentityProvider.csproj"
+                "${workspaceFolder}/dotnet.JsonIdentityProvider.sln"
             ],
             "problemMatcher": "$msCompile"
         }

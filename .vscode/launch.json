@@ -5,14 +5,46 @@
    "version": "0.2.0",
    "configurations": [
         {
+            "name": ".NET Core Launch (sample)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            // If you have changed target frameworks, make sure to update the program path.
+            "program": "${workspaceFolder}/Dotnet.JsonIdentityProvider.Sample/bin/Debug/netcoreapp2.1/Dotnet.JsonIdentityProvider.Sample.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Dotnet.JsonIdentityProvider.Sample",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "launchBrowser": {
+                "enabled": false,
+                "args": "${auto-detect-url}",
+                "windows": {
+                    "command": "cmd.exe",
+                    "args": "/C start ${auto-detect-url}"
+                },
+                "osx": {
+                    "command": "open"
+                },
+                "linux": {
+                    "command": "xdg-open"
+                }
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/Views"
+            }
+        },
+        {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.1/Dotnet.JsonIdentityProvider.dll",
+            "program": "${workspaceFolder}/src/bin/Debug/netcoreapp2.1/Dotnet.JsonIdentityProvider.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
