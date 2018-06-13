@@ -36,6 +36,7 @@ namespace Dotnet.JsonIdentityProvider.Controllers
             try
             {
                 var user = await this.userManager.FindByNameAsync(model.UserName);
+
                 if (user != null && this.passwordHash.VerifyHashedPassword(user, user.PasswordHash, model.Password) == PasswordVerificationResult.Success)
                 {
                     // Now that the user has been identified, we store his claims into the JWT token to simplify authorization policy mapping

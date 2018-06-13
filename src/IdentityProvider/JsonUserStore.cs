@@ -22,7 +22,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         private readonly IConfiguration config;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="config"></param>
@@ -34,7 +34,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.UserContext = new List<ApiUser>();
             this.ClaimContext = new List<Claim>();
 
-            // Check storage folder 
+            // Check storage folder
             if (!Directory.Exists(Path.GetDirectoryName(this.config["Identity:rootPath"])))
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(this.config["Identity:rootPath"]));
@@ -53,7 +53,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
@@ -63,7 +63,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
@@ -73,7 +73,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -86,7 +86,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -105,7 +105,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
@@ -133,7 +133,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         private bool CommitAsync()
@@ -155,7 +155,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
 
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         private void LoadDefaultContextAsync()
         {
@@ -164,16 +164,16 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.ClaimContext.Add(new Claim("IsAdmin", "True"));
 
             // create users
-            var user = new ApiUser { UserName = "whary", NormalizedUserName = "WHARY" };
+            var user = new ApiUser { UserName = "root", NormalizedUserName = "ROOT" };
             user.Claims.Add(this.GetClaimByName("SuperUser"));
-            user.PasswordHash = "AQAAAAEAACcQAAAAEGC1hTj0ArYi6rHfnn8gaGKSMds7PgCMMT6f6b+3x04xVQFcRmJkay99JoBncWEeyQ==";
+            user.PasswordHash = "AQAAAAEAACcQAAAAEPEklpcD6/h4WXtS4mzEY76idBGQQ42lVnnKyXig8dFxMuq1/mtcp6LcqTGt4tuS+Q=="; // P@ssword1234
 
             this.UserContext.Add(user);
 
             this.CommitAsync();
         }
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         private void LoadUserDbFromFile()
