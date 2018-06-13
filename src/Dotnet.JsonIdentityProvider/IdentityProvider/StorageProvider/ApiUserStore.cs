@@ -116,11 +116,16 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             return userClaims.ConvertAll(claim => claim.ToClaim());
         }
 
+        /// <summary>Add claims to a user as an asynchronous operation.</summary>
+        /// <param name="user">The user to add the claim to.</param>
+        /// <param name="claims">The collection of <see cref="T:System.Security.Claims.Claim" />s to add.</param>
+        /// <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken" /> used to propagate notifications that the operation should be canceled.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         public async Task AddClaimsAsync(ApiUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             foreach (var claim in claims)
             {
-                user.Claims.Add(this.jsonStorage.GetClaimByName("SuperUser"));
+                user.Claims.Add(this.jsonStorage.GetClaimByName(claim.Type));
             }
 
             await Task.CompletedTask;
