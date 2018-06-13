@@ -307,3 +307,4 @@ __pycache__/
 
 
 # End of https://www.gitignore.io/api/visualstudio,visualstudiocode
+sample/Dotnet\.JsonIdentityProvider\.Sample/data/
