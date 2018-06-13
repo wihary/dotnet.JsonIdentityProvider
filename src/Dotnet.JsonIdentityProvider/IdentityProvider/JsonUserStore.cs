@@ -16,9 +16,18 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
 
     public class JsonUserStore
     {
+        /// <summary>The identity user root path.</summary>
+        private const string IdentityUserRootPath = "Identity:userRootPath";
+
+        /// <summary>The identity claims root path.</summary>
+        private const string IdentityClaimsRootPath = "Identity:claimsRootPath";
+
         private List<ApiUser> UserContext;
+
         private List<Claim> ClaimContext;
+
         private readonly ILogger<JsonUserStore> logger;
+
         private readonly IConfiguration config;
 
         /// <summary>
@@ -34,21 +43,51 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.UserContext = new List<ApiUser>();
             this.ClaimContext = new List<Claim>();
 
-            // Check storage folder
-            if (!Directory.Exists(Path.GetDirectoryName(this.config["Identity:rootPath"])))
+            // Check user storage folder
+            var userDirectoryName = Path.GetDirectoryName(this.config[IdentityUserRootPath]);
+            if (!Directory.Exists(userDirectoryName))
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(this.config["Identity:rootPath"]));
+                Directory.CreateDirectory(userDirectoryName);
             }
 
+            // Check claims storage folder
+            var claimsDirectoryName = Path.GetDirectoryName(this.config[IdentityClaimsRootPath]);
+            if (!Directory.Exists(claimsDirectoryName))
+            {
+                Directory.CreateDirectory(claimsDirectoryName);
+            }
+
+            this.LoadClaims();
+            this.LoadUsers();
+        }
+
+        /// <summary>Method to load claims.</summary>
+        private void LoadClaims()
+        {
             // Check if storage folder already contains a set of user and claims
             // If so load them otherwise, create default setup
-            if (File.Exists(this.config["Identity:rootPath"]))
+            if (File.Exists(this.config[IdentityClaimsRootPath]))
+            {
+                this.LoadClaimsDbFromFile();
+            }
+            else
+            {
+                this.LoadDefaultClaimsContextAsync();
+            }
+        }
+
+        /// <summary>Method to load users.</summary>
+        private void LoadUsers()
+        {
+            // Check if storage folder already contains a set of user and claims
+            // If so load them otherwise, create default setup
+            if (File.Exists(this.config[IdentityUserRootPath]))
             {
                 this.LoadUserDbFromFile();
             }
             else
             {
-                this.LoadDefaultContextAsync();
+                this.LoadDefaultUsersContextAsync();
             }
         }
 
@@ -80,35 +119,28 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         public IdentityUserClaim<string> GetClaimByName(string name)
         {
             var roleClaim = new IdentityUserClaim<string>();
-            roleClaim.InitializeFromClaim(this.ClaimContext.Where(claim => claim.Type == name).FirstOrDefault());
-
+            roleClaim.InitializeFromClaim(this.ClaimContext.FirstOrDefault(claim => claim.Type == name));
             return roleClaim;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+        /// <summary>Method to create user and write users in json file</summary>
+        /// <param name="user">User to create</param>
+        /// <returns>Returns whether or not the user was created.</returns>
         public bool CreateUserAndCommitAsync(ApiUser user)
         {
-            if (!this.UserContext.Any(usr => usr.NormalizedUserName == user.NormalizedUserName))
+            if (this.UserContext.Any(usr => usr.NormalizedUserName == user.NormalizedUserName))
             {
-                this.UserContext.Add(user);
-
-                this.CommitAsync();
-
-                return true;
+                return false;
             }
 
-            return false;
+            this.UserContext.Add(user);
+            this.CommitUsersAsync();
+            return true;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
+        /// <summary> Method to update an user if this one aren't created. </summary>
+        /// <param name="user">The user to update</param>
+        /// <returns>Returns the result of identity update</returns>
         public IdentityResult UpdateUserAndCommitAsync(ApiUser user)
         {
             try
@@ -118,7 +150,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
                     this.UserContext.RemoveAll(usr => usr.NormalizedUserName == user.NormalizedUserName);
                     this.UserContext.Add(user);
 
-                    this.CommitAsync();
+                    this.CommitUsersAsync();
 
                     return IdentityResult.Success;
                 }
@@ -128,41 +160,41 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
                 this.logger.LogError($"Error occured while updating a user {ex}");
             }
 
-
             return IdentityResult.Failed();
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
-        private bool CommitAsync()
+        /// <summary> Method to write user and claims to json files </summary>
+        private void CommitUsersAsync()
         {
-
             var jsonUser = JsonConvert.SerializeObject(this.UserContext.ToList());
+
             try
             {
-                File.WriteAllText(this.config["Identity:rootPath"], jsonUser);
+                File.WriteAllText(this.config[IdentityUserRootPath], jsonUser);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 this.logger.LogError($"Error occured while comitting user db changes {ex}");
             }
-
-
-            return true;
         }
 
-
-        /// <summary>
-        ///
-        /// </summary>
-        private void LoadDefaultContextAsync()
+        /// <summary>Method to write claims to json files.</summary>
+        private void CommitClaimsAsync()
         {
-            // Create basic claims
-            this.ClaimContext.Add(new Claim("SuperUser", "True"));
-            this.ClaimContext.Add(new Claim("IsAdmin", "True"));
+            var jsonClaims = JsonConvert.SerializeObject(this.ClaimContext.ToList());
+            try
+            {
+                File.WriteAllText(this.config[IdentityClaimsRootPath], jsonClaims);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error occured while comitting claims db changes {ex}");
+            }
+        }
 
+        /// <summary> Method to create default users </summary>
+        private void LoadDefaultUsersContextAsync()
+        {
             // create users
             var user = new ApiUser { UserName = "root", NormalizedUserName = "ROOT" };
             user.Claims.Add(this.GetClaimByName("SuperUser"));
@@ -170,18 +202,40 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
 
             this.UserContext.Add(user);
 
-            this.CommitAsync();
+            this.CommitUsersAsync();
         }
-        /// <summary>
-        ///
-        /// </summary>
-        /// <returns></returns>
+
+        /// <summary>Method to create basic claims.</summary>
+        private void LoadDefaultClaimsContextAsync()
+        {
+            // Create basic claims
+            this.ClaimContext.Add(new Claim("SuperUser", "True"));
+            this.ClaimContext.Add(new Claim("IsAdmin", "True"));
+
+            this.CommitClaimsAsync();
+        }
+
+        /// <summary> Method to load users from json file </summary>
         private void LoadUserDbFromFile()
         {
             try
             {
-                var userDb = File.ReadAllText(this.config["Identity:rootPath"]);
+                var userDb = File.ReadAllText(this.config[IdentityUserRootPath]);
                 this.UserContext = JsonConvert.DeserializeObject<List<ApiUser>>(userDb);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error occured while reading from user db files {ex}");
+            }
+        }
+
+        /// <summary> Method to load claims from json file </summary>
+        private void LoadClaimsDbFromFile()
+        {
+            try
+            {
+                var userDb = File.ReadAllText(this.config[IdentityClaimsRootPath]);
+                this.ClaimContext = JsonConvert.DeserializeObject<List<Claim>>(userDb);
             }
             catch (Exception ex)
             {

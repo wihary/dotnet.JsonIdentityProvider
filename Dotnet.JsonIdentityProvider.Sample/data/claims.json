@@ -1,0 +1,20 @@
+[
+  {
+    "Issuer": "LOCAL AUTHORITY",
+    "OriginalIssuer": "LOCAL AUTHORITY",
+    "Properties": {},
+    "Subject": null,
+    "Type": "SuperUser",
+    "Value": "True",
+    "ValueType": "http://www.w3.org/2001/XMLSchema#string"
+  },
+  {
+    "Issuer": "LOCAL AUTHORITY",
+    "OriginalIssuer": "LOCAL AUTHORITY",
+    "Properties": {},
+    "Subject": null,
+    "Type": "IsAdmin",
+    "Value": "True",
+    "ValueType": "http://www.w3.org/2001/XMLSchema#string"
+  }
+]

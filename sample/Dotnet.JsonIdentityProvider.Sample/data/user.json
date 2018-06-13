@@ -1,1 +1,52 @@
-[{"Claims":[{"Id":0,"UserId":null,"ClaimType":"SuperUser","ClaimValue":"True"}],"Id":"53733488-1af2-4575-b043-2db851100149","UserName":"whary","NormalizedUserName":"WHARY","Email":null,"NormalizedEmail":null,"EmailConfirmed":false,"PasswordHash":"AQAAAAEAACcQAAAAEGC1hTj0ArYi6rHfnn8gaGKSMds7PgCMMT6f6b+3x04xVQFcRmJkay99JoBncWEeyQ==","SecurityStamp":null,"ConcurrencyStamp":"a8538716-965d-465e-976a-3d538ac16b78","PhoneNumber":null,"PhoneNumberConfirmed":false,"TwoFactorEnabled":false,"LockoutEnd":null,"LockoutEnabled":false,"AccessFailedCount":0}]
+[
+  {
+    "Claims": [
+      {
+        "Id": 0,
+        "UserId": null,
+        "ClaimType": "SuperUser",
+        "ClaimValue": "True"
+      }
+    ],
+    "Id": "45b5a337-cb33-400b-b9b7-86cad864a5e1",
+    "UserName": "root",
+    "NormalizedUserName": "ROOT",
+    "Email": null,
+    "NormalizedEmail": null,
+    "EmailConfirmed": false,
+    "PasswordHash": "AQAAAAEAACcQAAAAEPEklpcD6/h4WXtS4mzEY76idBGQQ42lVnnKyXig8dFxMuq1/mtcp6LcqTGt4tuS+Q==",
+    "SecurityStamp": null,
+    "ConcurrencyStamp": "8cc04187-e6ef-441e-a7e0-dd1de87d7c58",
+    "PhoneNumber": null,
+    "PhoneNumberConfirmed": false,
+    "TwoFactorEnabled": false,
+    "LockoutEnd": null,
+    "LockoutEnabled": false,
+    "AccessFailedCount": 0
+  },
+  {
+    "Claims": [
+      {
+        "Id": 0,
+        "UserId": null,
+        "ClaimType": "SuperUser",
+        "ClaimValue": "True"
+      }
+    ],
+    "Id": "c5855109-5f58-4492-ba36-92be4cf2fb4a",
+    "UserName": "ravonde",
+    "NormalizedUserName": "RAVONDE",
+    "Email": null,
+    "NormalizedEmail": null,
+    "EmailConfirmed": false,
+    "PasswordHash": "AQAAAAEAACcQAAAAECKC/zRpwnTFjzbrNfj2JHqfT+Arl+N+sxzptia39ObTGOU86euQe8tTAFxpplIR+A==",
+    "SecurityStamp": null,
+    "ConcurrencyStamp": "c63cb218-c5c6-42da-9ceb-61a1ac3e04c8",
+    "PhoneNumber": null,
+    "PhoneNumberConfirmed": false,
+    "TwoFactorEnabled": false,
+    "LockoutEnd": null,
+    "LockoutEnabled": false,
+    "AccessFailedCount": 0
+  }
+]
