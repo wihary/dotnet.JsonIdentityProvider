@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.JsonIdentityProvider", "src\Dotnet.JsonIdentityProvider.csproj", "{910471D9-B4D7-440C-B84C-0A43A1F6CF73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.JsonIdentityProvider", "src\Dotnet.JsonIdentityProvider\Dotnet.JsonIdentityProvider.csproj", "{910471D9-B4D7-440C-B84C-0A43A1F6CF73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.JsonIdentityProvider.Sample", "Dotnet.JsonIdentityProvider.Sample\Dotnet.JsonIdentityProvider.Sample.csproj", "{85CBDDF2-60AB-4DA8-89A5-2DB666CA3EB1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.JsonIdentityProvider.Sample", "sample\Dotnet.JsonIdentityProvider.Sample\Dotnet.JsonIdentityProvider.Sample.csproj", "{85CBDDF2-60AB-4DA8-89A5-2DB666CA3EB1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{AAA2682E-1058-4444-974D-BFEE6D46D465}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dotnet.JsonIdentityProvider.Tests", "test\Dotnet.JsonIdentityProvider.Tests\Dotnet.JsonIdentityProvider.Tests.csproj", "{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,5 +60,20 @@ Global
 		{85CBDDF2-60AB-4DA8-89A5-2DB666CA3EB1}.Release|x64.Build.0 = Release|Any CPU
 		{85CBDDF2-60AB-4DA8-89A5-2DB666CA3EB1}.Release|x86.ActiveCfg = Release|Any CPU
 		{85CBDDF2-60AB-4DA8-89A5-2DB666CA3EB1}.Release|x86.Build.0 = Release|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Release|x64.Build.0 = Release|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EA9F1CC6-2667-4518-92F3-7A5A7DF1EBDF} = {AAA2682E-1058-4444-974D-BFEE6D46D465}
 	EndGlobalSection
 EndGlobal
