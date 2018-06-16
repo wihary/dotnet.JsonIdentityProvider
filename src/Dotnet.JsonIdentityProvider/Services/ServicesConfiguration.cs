@@ -48,6 +48,7 @@ namespace Dotnet.JsonIdentityProvider.Services
                 });
 
             services.AddSingleton<JsonUserStore>();
+            services.BuildServiceProvider().GetService<JsonUserStore>().InitializeService();
         }
     }
 }

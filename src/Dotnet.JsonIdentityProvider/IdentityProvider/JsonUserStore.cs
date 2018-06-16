@@ -42,7 +42,13 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.config = config;
             this.UserContext = new List<ApiUser>();
             this.ClaimContext = new List<Claim>();
+        }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void InitializeService()
+        {
             // Check user storage folder
             var userDirectoryName = Path.GetDirectoryName(this.config[IdentityUserRootPath]);
             if (!Directory.Exists(userDirectoryName))
@@ -235,7 +241,10 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             try
             {
                 var userDb = File.ReadAllText(this.config[IdentityClaimsRootPath]);
-                this.ClaimContext = JsonConvert.DeserializeObject<List<Claim>>(userDb);
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.Converters.Add(new ClaimConverter());
+
+                this.ClaimContext = JsonConvert.DeserializeObject<List<Claim>>(userDb, settings);
             }
             catch (Exception ex)
             {

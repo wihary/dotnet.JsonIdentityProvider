@@ -5,11 +5,11 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.Model
 
     public class UserModel
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
-        public string[] Claims { get; set; }
+        public List<string> Claims { get; set; } = new List<string>();
 
         public List<Claim> GetClaimAsObjectList()
         {
@@ -17,7 +17,8 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.Model
             foreach (var claim in this.Claims)
             {
                 var splitedClaim = claim.Split(":");
-                result.Add(new Claim(splitedClaim[0], splitedClaim[1]));
+                if(splitedClaim.Length == 2)
+                    result.Add(new Claim(splitedClaim[0], splitedClaim[1]));
             }
 
             return result;
