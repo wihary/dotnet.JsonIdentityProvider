@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/Dotnet.JsonIdentityProvider.Sample/bin/Debug/netcoreapp2.1/Dotnet.JsonIdentityProvider.Sample.dll",
+            "program": "${workspaceFolder}/sample/Dotnet.JsonIdentityProvider.Sample/bin/Debug/netcoreapp2.1/Dotnet.JsonIdentityProvider.Sample.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/Dotnet.JsonIdentityProvider.Sample",
+            "cwd": "${workspaceFolder}/sample/Dotnet.JsonIdentityProvider.Sample",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
             "launchBrowser": {
