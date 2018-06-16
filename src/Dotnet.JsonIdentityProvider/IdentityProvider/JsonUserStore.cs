@@ -102,7 +102,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public ApiUser GetUserByName(string userName)
+        public virtual ApiUser GetUserByName(string userName)
         {
             return this.UserContext.Where(user => user.NormalizedUserName == userName).FirstOrDefault();
         }
@@ -112,9 +112,9 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public List<IdentityUserClaim<string>> GetUserClaims(string userId)
+        public virtual List<IdentityUserClaim<string>> GetUserClaims(string userId)
         {
-            return this.UserContext.Where(usr => usr.Id == userId).FirstOrDefault().Claims;
+            return this.UserContext.Where(usr => usr.Id == userId).FirstOrDefault()?.Claims;
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public IdentityUserClaim<string> GetClaimByName(string name)
+        public virtual IdentityUserClaim<string> GetClaimByName(string name)
         {
             var roleClaim = new IdentityUserClaim<string>();
             roleClaim.InitializeFromClaim(this.ClaimContext.FirstOrDefault(claim => claim.Type == name));
@@ -132,7 +132,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// <summary>Method to create user and write users in json file</summary>
         /// <param name="user">User to create</param>
         /// <returns>Returns whether or not the user was created.</returns>
-        public bool CreateUserAndCommitAsync(ApiUser user)
+        public virtual bool CreateUserAndCommitAsync(ApiUser user)
         {
             if (this.UserContext.Any(usr => usr.NormalizedUserName == user.NormalizedUserName))
             {
@@ -140,14 +140,15 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             }
 
             this.UserContext.Add(user);
-            this.CommitUsersAsync();
+            this.CommitUsers();
             return true;
         }
 
         /// <summary> Method to update an user if this one aren't created. </summary>
         /// <param name="user">The user to update</param>
         /// <returns>Returns the result of identity update</returns>
-        public IdentityResult UpdateUserAndCommitAsync(ApiUser user)
+        /// <Exception>Exception safe</Exception>
+        public virtual IdentityResult UpdateUserAndCommit(ApiUser user)
         {
             try
             {
@@ -156,7 +157,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
                     this.UserContext.RemoveAll(usr => usr.NormalizedUserName == user.NormalizedUserName);
                     this.UserContext.Add(user);
 
-                    this.CommitUsersAsync();
+                    this.CommitUsers();
 
                     return IdentityResult.Success;
                 }
@@ -170,7 +171,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary> Method to write user and claims to json files </summary>
-        private void CommitUsersAsync()
+        private void CommitUsers()
         {
             var jsonUser = JsonConvert.SerializeObject(this.UserContext.ToList());
 
@@ -208,7 +209,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
 
             this.UserContext.Add(user);
 
-            this.CommitUsersAsync();
+            this.CommitUsers();
         }
 
         /// <summary>Method to create basic claims.</summary>

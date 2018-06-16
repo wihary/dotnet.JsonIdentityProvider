@@ -26,7 +26,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
 
         public async Task<IdentityResult> UpdateAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(this.jsonStorage.UpdateUserAndCommitAsync(user));
+            return await Task.FromResult(this.jsonStorage.UpdateUserAndCommit(user));
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"Failed to create user {ex}");
+                this.logger.LogError($"Exception occured while creating user {ex}");
             }
             return IdentityResult.Failed();
         }
@@ -61,10 +61,28 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="normalizedUserName"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public Task<ApiUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
-            return Task.FromResult(this.jsonStorage.GetUserByName(normalizedUserName));
+            ApiUser result = null;
+
+            try
+            {
+                result = this.jsonStorage.GetUserByName(normalizedUserName);
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Exception occured while looking for user {ex}");
+            }
+
+            return Task.FromResult(result);
         }
+
         public Task<bool> HasPasswordAsync(ApiUser user, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
@@ -83,19 +101,20 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
 
         public Task<string> GetUserIdAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.Id);
+            return Task.FromResult(user?.Id);
         }
 
         public Task<string> GetUserNameAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.UserName);
+            return Task.FromResult(user?.UserName);
         }
 
 
 
         public async Task SetNormalizedUserNameAsync(ApiUser user, string normalizedName, CancellationToken cancellationToken)
         {
-            user.NormalizedUserName = normalizedName;
+            if (user != null)
+                user.NormalizedUserName = normalizedName;
             await Task.CompletedTask;
         }
 
@@ -109,11 +128,26 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             throw new System.NotImplementedException();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IList<Claim>> GetClaimsAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            var userClaims = await Task.FromResult(this.jsonStorage.GetUserClaims(user.Id));
-            return userClaims.ConvertAll(claim => claim.ToClaim());
+            try
+            {
+                var userClaims = await Task.FromResult(this.jsonStorage.GetUserClaims(user.Id));
+
+                return userClaims != null ? userClaims.ConvertAll(claim => claim.ToClaim()) : new List<Claim>();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Exception occured while looking for user claim {ex}");
+            }
+
+            return new List<Claim>();
         }
 
         /// <summary>Add claims to a user as an asynchronous operation.</summary>
@@ -123,9 +157,19 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         /// <returns>The task object representing the asynchronous operation.</returns>
         public async Task AddClaimsAsync(ApiUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
+            if(claims == null)
+                return; 
+
             foreach (var claim in claims)
             {
-                user.Claims.Add(this.jsonStorage.GetClaimByName(claim.Type));
+                try
+                {
+                    user.Claims.Add(this.jsonStorage.GetClaimByName(claim.Type));
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError($"Exception occured while adding claim to user {ex}");
+                }  
             }
 
             await Task.CompletedTask;
