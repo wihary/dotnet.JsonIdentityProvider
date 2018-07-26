@@ -124,10 +124,20 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public virtual IdentityUserClaim<string> GetClaimByName(string name)
+        public virtual IdentityUserClaim<string> GetClaimByName(string name, string value)
         {
             var roleClaim = new IdentityUserClaim<string>();
-            roleClaim.InitializeFromClaim(this.ClaimContext.FirstOrDefault(claim => claim.Type == name));
+            var localClaim = this.ClaimContext.FirstOrDefault(claim => claim.Type == name);
+
+            // Is claim does not exist we can simply add it to our claim base
+            if (localClaim == null)
+            {
+                localClaim = new Claim(name, value);
+                this.ClaimContext.Add(localClaim);
+                this.CommitClaims();
+            }
+
+            roleClaim.InitializeFromClaim(localClaim);
             return roleClaim;
         }
 
@@ -188,7 +198,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         }
 
         /// <summary>Method to write claims to json files.</summary>
-        private void CommitClaimsAsync()
+        private void CommitClaims()
         {
             var jsonClaims = JsonConvert.SerializeObject(this.ClaimContext.ToList());
             try
@@ -206,7 +216,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         {
             // create users
             var user = new ApiUser { UserName = "root", NormalizedUserName = "ROOT" };
-            user.Claims.Add(this.GetClaimByName("SuperUser"));
+            user.Claims.Add(this.GetClaimByName("SuperUser", "True"));
             user.PasswordHash = "AQAAAAEAACcQAAAAEPEklpcD6/h4WXtS4mzEY76idBGQQ42lVnnKyXig8dFxMuq1/mtcp6LcqTGt4tuS+Q=="; // P@ssword1234
 
             this.UserContext.Add(user);
@@ -221,7 +231,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.ClaimContext.Add(new Claim("SuperUser", "True"));
             this.ClaimContext.Add(new Claim("IsAdmin", "True"));
 
-            this.CommitClaimsAsync();
+            this.CommitClaims();
         }
 
         /// <summary> Method to load users from json file </summary>

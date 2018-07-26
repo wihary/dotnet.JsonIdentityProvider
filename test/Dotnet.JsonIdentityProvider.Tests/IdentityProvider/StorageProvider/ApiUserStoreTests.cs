@@ -296,7 +296,7 @@ namespace Dotnet.JsonIdentityProvider.Tests.IdentityProvider.StorageProvider
         public async Task AddClaimsAsync_nominal()
         {
             var jsonUserStoreMoq = new Mock<JsonUserStore>(this.logJsonUserStore.Object, this.config.Object);
-            jsonUserStoreMoq.Setup(method => method.GetClaimByName("test")).Returns(new IdentityUserClaim<string>());
+            jsonUserStoreMoq.Setup(method => method.GetClaimByName("test", "True")).Returns(new IdentityUserClaim<string>());
 
 
             var apiUserStore = new ApiUserStore(this.logApiUserStore.Object, null, jsonUserStoreMoq.Object);
@@ -313,7 +313,7 @@ namespace Dotnet.JsonIdentityProvider.Tests.IdentityProvider.StorageProvider
         public async Task AddClaimsAsync_Exception()
         {
             var jsonUserStoreMoq = new Mock<JsonUserStore>(this.logJsonUserStore.Object, this.config.Object);
-            jsonUserStoreMoq.Setup(method => method.GetClaimByName("test")).Throws<Exception>();
+            jsonUserStoreMoq.Setup(method => method.GetClaimByName("test", "True")).Throws<Exception>();
 
 
             var apiUserStore = new ApiUserStore(this.logApiUserStore.Object, null, jsonUserStoreMoq.Object);
@@ -330,7 +330,7 @@ namespace Dotnet.JsonIdentityProvider.Tests.IdentityProvider.StorageProvider
         public async Task AddClaimsAsync_ClaimListNull()
         {
             var jsonUserStoreMoq = new Mock<JsonUserStore>(this.logJsonUserStore.Object, this.config.Object);
-            jsonUserStoreMoq.Setup(method => method.GetClaimByName("test")).Throws<Exception>();
+            jsonUserStoreMoq.Setup(method => method.GetClaimByName("test", "True")).Throws<Exception>();
 
 
             var apiUserStore = new ApiUserStore(this.logApiUserStore.Object, null, jsonUserStoreMoq.Object);

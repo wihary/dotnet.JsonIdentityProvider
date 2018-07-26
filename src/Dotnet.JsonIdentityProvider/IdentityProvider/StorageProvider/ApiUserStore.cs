@@ -30,7 +30,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
@@ -62,7 +62,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="normalizedUserName"></param>
         /// <param name="cancellationToken"></param>
@@ -129,7 +129,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="user"></param>
         /// <param name="cancellationToken"></param>
@@ -158,18 +158,18 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         public async Task AddClaimsAsync(ApiUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
             if(claims == null)
-                return; 
+                return;
 
             foreach (var claim in claims)
             {
                 try
                 {
-                    user.Claims.Add(this.jsonStorage.GetClaimByName(claim.Type));
+                    user.Claims.Add(this.jsonStorage.GetClaimByName(claim.Type, claim.Value));
                 }
                 catch (Exception ex)
                 {
                     this.logger.LogError($"Exception occured while adding claim to user {ex}");
-                }  
+                }
             }
 
             await Task.CompletedTask;

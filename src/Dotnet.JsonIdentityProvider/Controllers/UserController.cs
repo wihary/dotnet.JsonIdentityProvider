@@ -29,12 +29,13 @@ namespace Dotnet.JsonIdentityProvider.Controllers
         [HttpPost]
         [Authorize(Policy = "SuperUsers")]
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
         public async Task<ActionResult> CreateUserAsync([FromBody] UserModel model)
         {
+            var result = new IdentityResult();
             try
             {
                 // Format model to api onject and send creation request
@@ -44,7 +45,7 @@ namespace Dotnet.JsonIdentityProvider.Controllers
                 };
                 newUser.PasswordHash = passwordHash.HashPassword(newUser, model.Password);
 
-                var result = await this.userManager.CreateAsync(newUser);
+                result = await this.userManager.CreateAsync(newUser);
                 if (result == IdentityResult.Success)
                 {
                     // Retrieve created user in order to give him the requested claims
