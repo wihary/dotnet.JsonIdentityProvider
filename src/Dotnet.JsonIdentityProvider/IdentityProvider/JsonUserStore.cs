@@ -42,10 +42,12 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.config = config;
             this.UserContext = new List<ApiUser>();
             this.ClaimContext = new List<Claim>();
+
+            this.InitializeService();
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void InitializeService()
         {
