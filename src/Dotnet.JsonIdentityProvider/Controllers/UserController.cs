@@ -8,6 +8,7 @@ namespace Dotnet.JsonIdentityProvider.Controllers
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Dotnet.JsonIdentityProvider.IdentityProvider.Model;
+    using System.Collections.Generic;
 
     [Route("api/[controller]")]
     [Authorize]
@@ -24,6 +25,17 @@ namespace Dotnet.JsonIdentityProvider.Controllers
             this.config = config;
             this.passwordHash = passwordCheck;
             this.userManager = userManager;
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "SuperUsers")]
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public async Task<ActionResult> GetAllUserAsync()
+        {
+            return Ok();
         }
 
         [HttpPost]
@@ -64,6 +76,42 @@ namespace Dotnet.JsonIdentityProvider.Controllers
             }
 
             return BadRequest();
+        }
+
+        [HttpPost]
+        [Authorize(Policy = "SuperUsers")]
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> UpdateUserAsync([FromBody] UserModel model)
+        {
+            return Ok();
+        }
+        
+        [HttpPut("{name}")]
+        [Authorize(Policy = "SuperUsers")]
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> UpdateUserClaims([FromRoute] string username, [FromBody] List<string> userClaims)
+        {
+            return Ok();
+        }
+
+        [HttpDelete("{name}")]
+        [Authorize(Policy = "SuperUsers")]
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> DeleteUserAsync([FromRoute] string username)
+        {
+            return Ok();
         }
     }
 }
