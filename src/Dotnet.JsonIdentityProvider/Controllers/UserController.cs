@@ -112,10 +112,47 @@ namespace Dotnet.JsonIdentityProvider.Controllers
         /// <returns></returns>
         public async Task<ActionResult> UpdateUserClaims([FromRoute] string username, [FromBody] List<string> userClaims)
         {
-            return Ok();
+            var result = new IdentityResult();
+            var userModel = new UserModel
+            {
+                Claims = userClaims,
+                Name = username
+            };
+
+            try
+            {
+                // Get existing user claims using its username
+                var persistedUser = await this.userManager.FindByNameAsync(userModel.Name);
+
+                // Remove all persisted claim for current user
+                var persistedUserClaims = await this.userManager.GetClaimsAsync(persistedUser);
+                result = await this.userManager.RemoveClaimsAsync(persistedUser, persistedUserClaims);
+
+                if (result == IdentityResult.Success)
+                {
+                    // Setup requested claims for persisted user
+                    result = await this.userManager.AddClaimsAsync(persistedUser, userModel.GetClaimAsObjectList());
+
+                    if (result == IdentityResult.Success)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        // In case somethign went wrong try to set claims back to their original states
+                        await this.userManager.AddClaimsAsync(persistedUser, persistedUserClaims);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while updating new user {ex}");
+            }
+
+            return BadRequest();
         }
 
-        [HttpDelete("{name}")]
+        [HttpDelete("{username}")]
         [Authorize(Policy = "SuperUsers")]
         /// <summary>
         ///
