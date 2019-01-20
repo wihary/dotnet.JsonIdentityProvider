@@ -34,9 +34,21 @@ namespace Dotnet.JsonIdentityProvider.Controllers
         ///
         /// </summary>
         /// <returns></returns>
-        public async Task<ActionResult> GetAllUserAsync()
+        public ActionResult GetAllUserAsync()
         {
-            return Ok();
+            var response = new List<UserModel>();
+            var persistedUsers = this.userManager.Users.ToList();
+
+            foreach (var user in persistedUsers)
+            {
+                response.Add(new UserModel
+                {
+                    Name = user.UserName,
+                    Claims = user.Claims.Select(x => x.ClaimType).ToList()
+                });
+            }
+
+            return Ok(response);
         }
 
         [HttpPost]
