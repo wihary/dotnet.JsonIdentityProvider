@@ -102,6 +102,15 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
         /// <summary>
         ///
         /// </summary>
+        /// <returns></returns>
+        public virtual IQueryable<ApiUser> GetAllUser()
+        {
+            return this.UserContext.AsQueryable();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
         public virtual ApiUser GetUserByName(string userName)
@@ -155,6 +164,22 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider
             this.CommitUsers();
             return true;
         }
+
+        /// <summary>Method to delete user and commit to json file</summary>
+        /// <param name="user">User to remove</param>
+        /// <returns>Returns whether or not the user was removed.</returns>
+        public virtual bool DeleteUserAndCommitAsync(ApiUser user)
+        {
+            if (!this.UserContext.Any(usr => usr.NormalizedUserName == user.NormalizedUserName))
+            {
+                return false;
+            }
+
+            this.UserContext.Remove(user);
+            this.CommitUsers();
+            return true;
+        }
+
 
         /// <summary> Method to update an user if this one aren't created. </summary>
         /// <param name="user">The user to update</param>
