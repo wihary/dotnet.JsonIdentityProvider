@@ -9,12 +9,15 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Dotnet.JsonIdentityProvider.IdentityProvider.Model;
+    using System.Linq;
 
-    public class ApiUserStore : IUserStore<ApiUser>, IUserPasswordStore<ApiUser>, IUserClaimStore<ApiUser>
+    public class ApiUserStore : IUserStore<ApiUser>, IUserPasswordStore<ApiUser>, IUserClaimStore<ApiUser>, IQueryableUserStore<ApiUser>
     {
         private readonly JsonUserStore jsonStorage;
         private readonly ILogger<ApiUserStore> logger;
         private readonly IConfiguration config;
+
+
 
         public ApiUserStore(ILogger<ApiUserStore> logger, IConfiguration config, JsonUserStore jsonStorage)
         {
@@ -23,6 +26,11 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             this.config = config;
         }
 
+        /// <summary>
+        /// Return queryable list of all persisted users
+        /// </summary>
+        /// <returns></returns>
+        public IQueryable<ApiUser> Users => this.jsonStorage.GetAllUser();
 
         public async Task<IdentityResult> UpdateAsync(ApiUser user, CancellationToken cancellationToken)
         {
@@ -49,9 +57,18 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             return IdentityResult.Failed();
         }
 
-        public Task<IdentityResult> DeleteAsync(ApiUser user, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(ApiUser user, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                await Task.FromResult(this.jsonStorage.DeleteUserAndCommitAsync(user));
+                return IdentityResult.Success;
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Exception occured while removing user {ex}");
+            }
+            return IdentityResult.Failed();
         }
 
 
@@ -120,7 +137,9 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
 
         public Task SetPasswordHashAsync(ApiUser user, string passwordHash, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            user.PasswordHash = passwordHash;
+            this.jsonStorage.UpdateUserAndCommit(user);
+            return Task.CompletedTask;
         }
 
         public Task SetUserNameAsync(ApiUser user, string userName, CancellationToken cancellationToken)
@@ -157,7 +176,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
         /// <returns>The task object representing the asynchronous operation.</returns>
         public async Task AddClaimsAsync(ApiUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            if(claims == null)
+            if (claims == null)
                 return;
 
             foreach (var claim in claims)
@@ -172,6 +191,7 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
                 }
             }
 
+            this.jsonStorage.UpdateUserAndCommit(user);
             await Task.CompletedTask;
         }
 
@@ -180,9 +200,27 @@ namespace Dotnet.JsonIdentityProvider.IdentityProvider.StorageProvider
             throw new System.NotImplementedException();
         }
 
-        public Task RemoveClaimsAsync(ApiUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+        public async Task RemoveClaimsAsync(ApiUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            if (claims == null)
+                return;
+
+            foreach (var claim in claims)
+            {
+                try
+                {
+                    user.Claims.RemoveAll(clm => clm.ClaimType == claim.Type);
+
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError($"Exception occured while removing claim to user {ex}");
+                }
+            }
+
+            this.jsonStorage.UpdateUserAndCommit(user);
+
+            await Task.CompletedTask;
         }
 
         public Task<IList<ApiUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
