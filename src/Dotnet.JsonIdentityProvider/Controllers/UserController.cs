@@ -91,19 +91,99 @@ namespace Dotnet.JsonIdentityProvider.Controllers
             return BadRequest();
         }
 
-        [HttpPost]
+        [HttpPut("username/{oldName}/{NewName}")]
         [Authorize(Policy = "SuperUsers")]
         /// <summary>
         ///
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        public async Task<ActionResult> UpdateUserAsync([FromBody] UserModel model)
+        public async Task<ActionResult> ChangeUserName([FromRoute] string oldName, [FromRoute] string newName)
         {
-            return Ok();
+            var result = new IdentityResult();
+
+            //Format model to api onject and send creation request
+            var updatedUser = new ApiUser
+            {
+                UserName = oldName
+            };
+
+            try
+            {
+                // Get existing user claims using its username
+                var persistedUser = await this.userManager.FindByNameAsync(updatedUser.UserName);
+
+                // first delete existing user
+                result = await this.userManager.DeleteAsync(persistedUser);
+
+                if (result == IdentityResult.Success)
+                {
+                    // set new user name
+                    persistedUser.UserName = newName;
+
+                    result = await this.userManager.CreateAsync(persistedUser);
+                    if (result == IdentityResult.Success)
+                    {
+                        return Ok();
+                    }
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while updating new user {ex}");
+            }
+
+            return BadRequest();
+
         }
-        
-        [HttpPut("{name}")]
+
+        [HttpPut("password/{username}")]
+        [Authorize(Policy = "SuperUsers")]
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public async Task<ActionResult> ChangeUSerPassword([FromRoute] string username, [FromBody] string password)
+        {
+            var result = new IdentityResult();
+
+            //Format model to api onject and send creation request
+            var updatedUser = new ApiUser
+            {
+                UserName = username
+            };
+
+            try
+            {
+                // Get existing user claims using its username
+                var persistedUser = await this.userManager.FindByNameAsync(updatedUser.UserName);
+
+                // first delete existing user
+                result = await this.userManager.DeleteAsync(persistedUser);
+
+                if (result == IdentityResult.Success)
+                {
+                    // set new user name
+                    persistedUser.PasswordHash = passwordHash.HashPassword(persistedUser, password);
+
+                    result = await this.userManager.CreateAsync(persistedUser);
+                    if (result == IdentityResult.Success)
+                    {
+                        return Ok();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while updating new user {ex}");
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut("claims/{username}")]
         [Authorize(Policy = "SuperUsers")]
         /// <summary>
         ///
