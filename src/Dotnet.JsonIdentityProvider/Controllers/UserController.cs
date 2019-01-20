@@ -9,6 +9,7 @@ namespace Dotnet.JsonIdentityProvider.Controllers
     using Microsoft.Extensions.Logging;
     using Dotnet.JsonIdentityProvider.IdentityProvider.Model;
     using System.Collections.Generic;
+    using System.Linq;
 
     [Route("api/[controller]")]
     [Authorize]
@@ -111,7 +112,34 @@ namespace Dotnet.JsonIdentityProvider.Controllers
         /// <returns></returns>
         public async Task<ActionResult> DeleteUserAsync([FromRoute] string username)
         {
-            return Ok();
+            var result = new IdentityResult();
+
+            //Format model to api onject and send creation request
+            var updatedUser = new ApiUser
+            {
+                UserName = username
+            };
+
+            try
+            {
+                // Get existing user claims using its username
+                var persistedUser = await this.userManager.FindByNameAsync(updatedUser.UserName);
+
+                // first delete existing user
+                result = await this.userManager.DeleteAsync(persistedUser);
+
+                // then if everything ok recreat it
+                if (result.Succeeded)
+                {
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError($"Error while deleting user {ex}");
+            }
+
+            return BadRequest();
         }
     }
 }
